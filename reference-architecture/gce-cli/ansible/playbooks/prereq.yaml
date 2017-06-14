@@ -3,10 +3,12 @@
   hosts: localhost
   roles:
   - pre-flight-validation
-  - openshift-ansible-installer
+  - role: openshift-ansible-installer
+    when: openshift_deployment_type != "origin"
   - ansible-gcp
   - dns-zone
   - gcp-ssh-key
-  - rhel-image
+  - role: rhel-image
+    when: openshift_deployment_type != "origin"
   - role: deployment-create
     deployment_name: network
