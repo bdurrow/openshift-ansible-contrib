@@ -1,8 +1,15 @@
 resources:
 - name: {{ properties['prefix'] }}-network
   properties:
-    autoCreateSubnetworks: true
+    autoCreateSubnetworks: false
   type: compute.v1.network
+- name: {{ properties['prefix'] }}-{{ properties['region'] }}-subnet
+  properties:
+    ipCidrRange: 10.160.0.0/12
+    privateIpGoogleAccess: true
+    network: $(ref.{{ properties['prefix'] }}-network.selfLink)
+    region: {{ properties['region'] }}
+  type: compute.beta.subnetwork
 - name: {{ properties['prefix'] }}-icmp
   properties:
     allowed:

@@ -21,6 +21,7 @@ resources:
         type: ONE_TO_ONE_NAT
       name: nic0
       network: projects/{{env['project']}}/global/networks/{{ properties['prefix'] }}-network
+      subnetwork: projects/{{env['project']}}/regions/{{ properties['region'] }}/subnetworks/{{ properties['prefix'] }}-{{ properties['region'] }}-subnet
     scheduling:
       automaticRestart: true
       onHostMaintenance: MIGRATE
@@ -61,6 +62,7 @@ resources:
         - name: external-nat
           type: ONE_TO_ONE_NAT
         network: projects/{{env['project']}}/global/networks/{{ properties['prefix'] }}-network
+        subnetwork: projects/{{env['project']}}/regions/{{ properties['region'] }}/subnetworks/{{ properties['prefix'] }}-{{ properties['region'] }}-subnet
       scheduling:
         automaticRestart: true
         onHostMaintenance: MIGRATE
@@ -100,6 +102,7 @@ resources:
         - name: external-nat
           type: ONE_TO_ONE_NAT
         network: projects/{{env['project']}}/global/networks/{{ properties['prefix'] }}-network
+        subnetwork: projects/{{env['project']}}/regions/{{ properties['region'] }}/subnetworks/{{ properties['prefix'] }}-{{ properties['region'] }}-subnet
       scheduling:
         automaticRestart: true
         onHostMaintenance: MIGRATE
@@ -139,6 +142,7 @@ resources:
         - name: external-nat
           type: ONE_TO_ONE_NAT
         network: projects/{{env['project']}}/global/networks/{{ properties['prefix'] }}-network
+        subnetwork: projects/{{env['project']}}/regions/{{ properties['region'] }}/subnetworks/{{ properties['prefix'] }}-{{ properties['region'] }}-subnet
       scheduling:
         automaticRestart: true
         onHostMaintenance: MIGRATE
