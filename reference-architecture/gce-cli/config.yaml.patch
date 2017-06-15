@@ -1,0 +1,126 @@
+--- config.yaml.example	2017-06-14 14:56:11.000000000 -0600
++++ config.yaml	2017-06-15 12:24:28.000000000 -0600
+@@ -5,7 +5,7 @@
+ 
+ # Prefix for every resource name deployed. You can deploy multiple clusters
+ # under single account with different prefixes and DNS configuration
+-prefix: 'ocp'
++prefix: 'gca-dev-00'
+ 
+ # Username and password for Red Hat Customer Portal
+ rhsm_user: 'user@example.com'
+@@ -21,48 +21,52 @@
+ delete_gold_image: false
+ 
+ # Project ID and main zone settings for Google Cloud
+-gcloud_project: 'project-1'
+-gcloud_zone: 'us-central1-a'
++gcloud_project: 'gca-dev-00'
++gcloud_zone: 'us-central1-f'
+ 
+ # Public DNS domain which will be configured in Google Cloud DNS
+-public_hosted_zone: 'ocp.example.com'
++public_hosted_zone: 'gca-dev.mumms.com'
+ # Public DNS name for the Master service
+ openshift_master_cluster_public_hostname: 'master.{{ public_hosted_zone }}'
+ # Internal DNS name for the Master service
+ openshift_master_cluster_hostname: 'internal-master.{{ public_hosted_zone }}'
+ # Domain name for the OpenShift applications
+-wildcard_zone: 'apps.{{ public_hosted_zone }}'
++wildcard_zone: '{{ public_hosted_zone }}'
+ 
+ # Paths on the local file system for the certificate files. If empty, self-signed
+ # certificate will be generated
+-master_https_key_file: ''
+-master_https_cert_file: ''
++master_https_key_file: '/home/brad/certificates/aviary_mumms_com.key'
++master_https_cert_file: '/home/brad/certificates/aviary_mumms_com-chain.crt'
++
+ 
+ # How many instances should be created for each group
+ master_instance_group_size: 3
+ infra_node_instance_group_size: 3
+-node_instance_group_size: 2
++node_instance_group_size: 3
+ 
+ # Machine types
+ bastion_machine_type: g1-small
+-master_machine_type: n1-standard-2
++master_machine_type: n1-standard-1
+ node_machine_type: n1-standard-2
+ 
+ # OpenShift Identity providers. This is Google oauth example (hosted_domain is
+ # optional and restricts login to users only from the specified domain)
+ openshift_master_identity_providers:
+-- name: 'google'
+-  kind: 'GoogleIdentityProvider'
+-  login: true
++- name: 'github'
++  kind: 'GitHubIdentityProvider'
+   challenge: false
+-  mapping_method: 'claim'
+-  clientID: 'xxx-yyy.apps.googleusercontent.com'
+-  clientSecret: 'zzz'
+-  hostedDomain: 'example.com'
++  login: true
++  mappingMethod: 'claim'
++  clientID: '<<REDACTED>>'
++  clientSecret: '<<REDACTED>>'
++  teams:
++  - 'mummssoftware/gca-dev-users'
+ 
+ # Deploy OpenShift Metrics
+-openshift_hosted_metrics_deploy: false
+-openshift_hosted_metrics_storage_volume_size: 20Gi
++openshift_hosted_metrics_deploy: true
++openshift_hosted_metrics_deployer_version: 'v1.5.1'
++openshift_hosted_metrics_storage_volume_size: '20Gi'
++
+ 
+ # OpenShift SDN selection (options are 'redhat/openshift-ovs-subnet', 'redhat/openshift-ovs-multitenant')
+ os_sdn_network_plugin_name: 'redhat/openshift-ovs-subnet'
+@@ -81,5 +85,42 @@
+ node_openshift_disk_size: 50
+ 
+ # OpenShift deployment type
+-openshift_deployment_type: openshift-enterprise
+-containerized: false
++openshift_deployment_type: origin
++containerized: true
++
++##Mumms
++tmp_instance_sourceimage: 'projects/centos-cloud/global/images/centos-7-v20170523'
++gold_image: '{{ prefix }}-centos-7-v20170523-base'
++
++openshift_hosted_router_certificate:
++  certfile: '/home/brad/certificates/aviary_mumms_com.crt'
++  keyfile: '/home/brad/certificates/aviary_mumms_com.key'
++  cafile: '/home/brad/certificates/aviary_mumms_com-ca-chain.crt'
++
++openshift_hosted_logging_deploy: true
++openshift_hosted_logging_deployer_version: 'v1.5.1'
++openshift_hosted_logging_storage_kind: 'dynamic'
++openshift_hosted_logging_storage_volume_size: '20Gi'
++
++#Not implemented until Openshift Ansible 3.6
++#openshift_storageclass_name: standard
++#openshift_storageclass_provisioner: kubernetes.io/gce-pd
++#openshift_storageclass_type: pd-standard
++
++openshift_hosted_registry_cert_expire_days: 3650
++openshift_ca_cert_expire_days: 3650
++openshift_node_cert_expire_days: 3650
++openshift_master_cert_expire_days: 3650
++etcd_ca_default_days: 3650
++
++#dev
++gce_vpc_custom_subnet_cidr: 10.160.0.0/20
++osm_cluster_network_cidr=172.160.0.0/14
++osm_host_subnet_length=9
++openshift_master_portal_net=172.164.0.0/14
++
++#prod
++#gce_vpc_custom_subnet_cidr: 10.176.0.0/20
++#osm_cluster_network_cidr=172.176.0.0/14
++#osm_host_subnet_length=9
++#openshift_master_portal_net=172.180.0.0/14
