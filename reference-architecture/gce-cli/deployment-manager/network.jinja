@@ -5,7 +5,7 @@ resources:
   type: compute.v1.network
 - name: {{ properties['prefix'] }}-{{ properties['region'] }}-subnet
   properties:
-    ipCidrRange: 10.160.0.0/12
+    ipCidrRange: 10.160.0.0/20
     privateIpGoogleAccess: true
     network: $(ref.{{ properties['prefix'] }}-network.selfLink)
     region: {{ properties['region'] }}
