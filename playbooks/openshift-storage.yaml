@@ -1,4 +1,9 @@
 ---
+- hosts: nodes
+  gather_facts: no
+  become: yes
+  roles:
+  - docker-storage-setup
 - hosts: schedulable_nodes
   gather_facts: no
   become: yes

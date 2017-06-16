@@ -1,11 +1,13 @@
 resources:
-{% for i in properties['instances'] %}
+{% for i in properties['docker_instances'] %}
 - name: {{ properties['prefix'] }}-pd-docker-{{ i.name }}
   properties:
     sizeGb: {{ properties['node_docker_disk_size'] }}
     type: zones/{{ i.zone }}/diskTypes/pd-ssd
     zone: {{ i.zone }}
   type: compute.v1.disk
+{% endfor %}
+{% for i in properties['schedulable_instances'] %}
 - name: {{ properties['prefix'] }}-pd-openshift-{{ i.name }}
   properties:
     sizeGb: {{ properties['node_openshift_disk_size'] }}

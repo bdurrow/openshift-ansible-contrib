@@ -7,5 +7,7 @@ resources:
     prefix: {{ prefix }}
     node_docker_disk_size: {{ node_docker_disk_size }}
     node_openshift_disk_size: {{ node_openshift_disk_size }}
-    instances:
-      {{ instances | to_yaml | indent(6) }}
+    docker_instances:
+      {{ docker_instances | to_yaml | indent(6) }}
+    schedulable_instances:
+      {{ schedulable_instances | to_yaml | indent(6) }}
