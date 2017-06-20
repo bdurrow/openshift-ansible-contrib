@@ -47,7 +47,8 @@ resources:
     properties:
       canIpForward: false
       disks:
-      - autoDelete: true
+      - name: boot
+        autoDelete: true
         boot: true
         initializeParams:
           diskSizeGb: {{ properties['master_boot_disk_size'] }}
@@ -55,6 +56,30 @@ resources:
           sourceImage: global/images/family/{{ properties['gold_image'] }}
         mode: READ_WRITE
         type: PERSISTENT
+      - name: docker
+        autoDelete: true
+        boot: false
+        deviceName: docker
+        index: 1
+        interface: SCSI
+        mode: READ_WRITE
+        type: PERSISTENT
+        initializeParams:
+          sourceImage: projects/cloudutils-1241/global/images/family/empty
+          diskSizeGb: {{ properties['node_docker_disk_size'] }}
+          diskType: pd-ssd
+      - name: openshift
+        autoDelete: true
+        boot: false
+        deviceName: openshift
+        index: 1
+        interface: SCSI
+        mode: READ_WRITE
+        type: PERSISTENT
+        initializeParams:
+          sourceImage: projects/cloudutils-1241/global/images/family/empty
+          diskSizeGb: {{ properties['node_openshift_disk_size'] }}
+          diskType: pd-ssd        
       machineType: {{ properties['master_machine_type'] }}
       metadata: {}
       networkInterfaces:
@@ -87,7 +112,8 @@ resources:
     properties:
       canIpForward: false
       disks:
-      - autoDelete: true
+      - name: boot
+        autoDelete: true
         boot: true
         initializeParams:
           diskSizeGb: {{ properties['node_boot_disk_size'] }}
@@ -95,6 +121,30 @@ resources:
           sourceImage: global/images/family/{{ properties['gold_image'] }}
         mode: READ_WRITE
         type: PERSISTENT
+      - name: docker
+        autoDelete: true
+        boot: false
+        deviceName: docker
+        index: 1
+        interface: SCSI
+        mode: READ_WRITE
+        type: PERSISTENT
+        initializeParams:
+          sourceImage: projects/cloudutils-1241/global/images/family/empty
+          diskSizeGb: {{ properties['node_docker_disk_size'] }}
+          diskType: pd-ssd
+      - name: openshift
+        autoDelete: true
+        boot: false
+        deviceName: openshift
+        index: 1
+        interface: SCSI
+        mode: READ_WRITE
+        type: PERSISTENT
+        initializeParams:
+          sourceImage: projects/cloudutils-1241/global/images/family/empty
+          diskSizeGb: {{ properties['node_openshift_disk_size'] }}
+          diskType: pd-ssd        
       machineType: {{ properties['node_machine_type'] }}
       metadata: {}
       networkInterfaces:
@@ -127,7 +177,8 @@ resources:
     properties:
       canIpForward: false
       disks:
-      - autoDelete: true
+      - name: boot
+        autoDelete: true
         boot: true
         initializeParams:
           diskSizeGb: {{ properties['node_boot_disk_size'] }}
@@ -135,6 +186,30 @@ resources:
           sourceImage: global/images/family/{{ properties['gold_image'] }}
         mode: READ_WRITE
         type: PERSISTENT
+      - name: docker
+        autoDelete: true
+        boot: false
+        deviceName: docker
+        index: 1
+        interface: SCSI
+        mode: READ_WRITE
+        type: PERSISTENT
+        initializeParams:
+          sourceImage: projects/cloudutils-1241/global/images/family/empty
+          diskSizeGb: {{ properties['node_docker_disk_size'] }}
+          diskType: pd-ssd
+      - name: openshift
+        autoDelete: true
+        boot: false
+        deviceName: openshift
+        index: 1
+        interface: SCSI
+        mode: READ_WRITE
+        type: PERSISTENT
+        initializeParams:
+          sourceImage: projects/cloudutils-1241/global/images/family/empty
+          diskSizeGb: {{ properties['node_openshift_disk_size'] }}
+          diskType: pd-ssd        
       machineType: {{ properties['node_machine_type'] }}
       metadata: {}
       networkInterfaces:
