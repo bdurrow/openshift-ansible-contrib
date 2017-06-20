@@ -56,7 +56,7 @@ resources:
           sourceImage: global/images/family/{{ properties['gold_image'] }}
         mode: READ_WRITE
         type: PERSISTENT
-{% if containerized %}
+{% if properties['containerized'] %}
       - name: docker
         autoDelete: true
         boot: false
@@ -76,7 +76,7 @@ resources:
         - key: user-data
           value: |
             #cloud-config
-{% if containerized %}          
+{% if properties['containerized'] %}
             write_files:
             - content: |
                 DEVS="/dev/disk/by-id/google-docker"
@@ -85,16 +85,7 @@ resources:
                 EXTRA_DOCKER_STORAGE_OPTIONS="--storage-opt dm.basesize=3G"
               path: /etc/sysconfig/docker-storage-setup
               permissions: '0644'
-
 {% endif %}
-            fs_setup:
-               - label: osl
-                 filesystem: xfs
-                 device: /dev/disk/by-id/google-docker
-                 partition: none
-
-            mounts:
-              - [ '/dev/disk/by-id/google-docker', '/var/lib/origin/openshift.local.volumes', 'xfs', 'gquota', '0', '0' ]
       networkInterfaces:
       - accessConfigs:
         - name: external-nat
@@ -164,7 +155,6 @@ resources:
         - key: user-data
           value: |
             #cloud-config
-{% if containerized %}          
             write_files:
             - content: |
                 DEVS="/dev/disk/by-id/google-docker"
@@ -174,7 +164,6 @@ resources:
               path: /etc/sysconfig/docker-storage-setup
               permissions: '0644'
 
-{% endif %}
             fs_setup:
                - label: osl
                  filesystem: xfs
@@ -252,7 +241,6 @@ resources:
         - key: user-data
           value: |
             #cloud-config
-{% if containerized %}          
             write_files:
             - content: |
                 DEVS="/dev/disk/by-id/google-docker"
@@ -262,7 +250,6 @@ resources:
               path: /etc/sysconfig/docker-storage-setup
               permissions: '0644'
 
-{% endif %}
             fs_setup:
                - label: osl
                  filesystem: xfs
