@@ -65,7 +65,7 @@ resources:
         mode: READ_WRITE
         type: PERSISTENT
         initializeParams:
-          sourceImage: projects/cloudutils-1241/global/images/family/empty
+          sourceImage: global/images/family/empty
           diskSizeGb: {{ properties['node_docker_disk_size'] }}
           diskType: pd-ssd
       - name: openshift
@@ -77,7 +77,7 @@ resources:
         mode: READ_WRITE
         type: PERSISTENT
         initializeParams:
-          sourceImage: projects/cloudutils-1241/global/images/family/empty
+          sourceImage: global/images/family/empty
           diskSizeGb: {{ properties['node_openshift_disk_size'] }}
           diskType: pd-ssd        
       machineType: {{ properties['master_machine_type'] }}
@@ -130,7 +130,7 @@ resources:
         mode: READ_WRITE
         type: PERSISTENT
         initializeParams:
-          sourceImage: projects/cloudutils-1241/global/images/family/empty
+          sourceImage: global/images/family/empty
           diskSizeGb: {{ properties['node_docker_disk_size'] }}
           diskType: pd-ssd
       - name: openshift
@@ -142,7 +142,7 @@ resources:
         mode: READ_WRITE
         type: PERSISTENT
         initializeParams:
-          sourceImage: projects/cloudutils-1241/global/images/family/empty
+          sourceImage: global/images/family/empty
           diskSizeGb: {{ properties['node_openshift_disk_size'] }}
           diskType: pd-ssd        
       machineType: {{ properties['node_machine_type'] }}
@@ -195,7 +195,7 @@ resources:
         mode: READ_WRITE
         type: PERSISTENT
         initializeParams:
-          sourceImage: projects/cloudutils-1241/global/images/family/empty
+          sourceImage: global/images/family/empty
           diskSizeGb: {{ properties['node_docker_disk_size'] }}
           diskType: pd-ssd
       - name: openshift
@@ -207,7 +207,7 @@ resources:
         mode: READ_WRITE
         type: PERSISTENT
         initializeParams:
-          sourceImage: projects/cloudutils-1241/global/images/family/empty
+          sourceImage: global/images/family/empty
           diskSizeGb: {{ properties['node_openshift_disk_size'] }}
           diskType: pd-ssd        
       machineType: {{ properties['node_machine_type'] }}
