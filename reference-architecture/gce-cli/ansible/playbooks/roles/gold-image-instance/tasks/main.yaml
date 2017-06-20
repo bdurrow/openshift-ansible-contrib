@@ -51,6 +51,7 @@
     - bash-completion
     - bind-utils
     - bridge-utils
+    - cloud-init
     - docker
     - iptables-services
     - google-config
@@ -60,6 +61,9 @@
     - net-tools
     - python-httplib2
     - wget
+
+  - name: add disk_setup to cloud_init_modules
+    lineinfile: dest=/etc/cloud/cloud.cfg insertafter="^cloud_init_modules:$" line=' - disk_setup' state=present
 
   - name: clear yum cache
     command: yum clean all

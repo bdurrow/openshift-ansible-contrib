@@ -71,7 +71,30 @@ resources:
           diskType: pd-ssd
 {% endif %}                  
       machineType: {{ properties['master_machine_type'] }}
-      metadata: {}
+      metadata:
+        items:
+        - key: user-data
+          value: |
+            #cloud-config
+{% if containerized %}          
+            write_files:
+            - content: |
+                DEVS="/dev/disk/by-id/google-docker"
+                VG="docker-vol"
+                DATA_SIZE="95%VG"
+                EXTRA_DOCKER_STORAGE_OPTIONS="--storage-opt dm.basesize=3G"
+              path: /etc/sysconfig/docker-storage-setup
+              permissions: '0644'
+
+{% endif %}
+            fs_setup:
+               - label: osl
+                 filesystem: xfs
+                 device: /dev/disk/by-id/google-docker
+                 partition: none
+
+            mounts:
+              - [ '/dev/disk/by-id/google-docker', '/var/lib/origin/openshift.local.volumes', 'xfs', 'gquota', '0', '0' ]
       networkInterfaces:
       - accessConfigs:
         - name: external-nat
@@ -136,7 +159,30 @@ resources:
           diskSizeGb: {{ properties['node_openshift_disk_size'] }}
           diskType: pd-ssd        
       machineType: {{ properties['node_machine_type'] }}
-      metadata: {}
+      metadata:
+        items:
+        - key: user-data
+          value: |
+            #cloud-config
+{% if containerized %}          
+            write_files:
+            - content: |
+                DEVS="/dev/disk/by-id/google-docker"
+                VG="docker-vol"
+                DATA_SIZE="95%VG"
+                EXTRA_DOCKER_STORAGE_OPTIONS="--storage-opt dm.basesize=3G"
+              path: /etc/sysconfig/docker-storage-setup
+              permissions: '0644'
+
+{% endif %}
+            fs_setup:
+               - label: osl
+                 filesystem: xfs
+                 device: /dev/disk/by-id/google-docker
+                 partition: none
+
+            mounts:
+              - [ '/dev/disk/by-id/google-docker', '/var/lib/origin/openshift.local.volumes', 'xfs', 'gquota', '0', '0' ]
       networkInterfaces:
       - accessConfigs:
         - name: external-nat
@@ -201,7 +247,30 @@ resources:
           diskSizeGb: {{ properties['node_openshift_disk_size'] }}
           diskType: pd-ssd        
       machineType: {{ properties['node_machine_type'] }}
-      metadata: {}
+      metadata:
+        items:
+        - key: user-data
+          value: |
+            #cloud-config
+{% if containerized %}          
+            write_files:
+            - content: |
+                DEVS="/dev/disk/by-id/google-docker"
+                VG="docker-vol"
+                DATA_SIZE="95%VG"
+                EXTRA_DOCKER_STORAGE_OPTIONS="--storage-opt dm.basesize=3G"
+              path: /etc/sysconfig/docker-storage-setup
+              permissions: '0644'
+
+{% endif %}
+            fs_setup:
+               - label: osl
+                 filesystem: xfs
+                 device: /dev/disk/by-id/google-docker
+                 partition: none
+
+            mounts:
+              - [ '/dev/disk/by-id/google-docker', '/var/lib/origin/openshift.local.volumes', 'xfs', 'gquota', '0', '0' ]
       networkInterfaces:
       - accessConfigs:
         - name: external-nat
