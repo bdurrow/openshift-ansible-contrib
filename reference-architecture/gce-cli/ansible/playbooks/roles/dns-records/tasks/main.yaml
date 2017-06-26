@@ -5,7 +5,7 @@
   changed_when: false
 
 - name: get master network lb ip
-  command: gcloud --project {{ gcloud_project }} compute addresses describe {{ prefix }}-master-network-lb-ip --region {{ gcloud_region }} --format='value(address)'
+  command: gcloud --project {{ gcloud_project }} compute forwarding-rules describe {{ prefix }}-master-network-lb-ip --region {{ gcloud_region }} --format='value(IPAddress)'
   register: master_network_lb_ip
   changed_when: false
 

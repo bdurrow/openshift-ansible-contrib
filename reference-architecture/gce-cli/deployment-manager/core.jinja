@@ -255,17 +255,11 @@ resources:
     - $(ref.{{ properties['prefix'] }}-master-network-lb-health-check.selfLink)
     region: {{ properties['region'] }}
   type: compute.v1.targetPool
-- name: {{ properties['prefix'] }}-master-network-lb-ip
-  properties:
-    description: ''
-    region: {{ properties['region'] }}
-  type: compute.v1.address
 - name: {{ properties['prefix'] }}-master-network-lb-rule
   properties:
     IPProtocol: TCP
     description: ''
-    IPAddress: $(ref.{{ properties['prefix'] }}-master-network-lb-ip.selfLink)
-    loadBalancingScheme: EXTERNAL
+    loadBalancingScheme: INTERNAL
     portRange: {{ properties['console_port'] }}-{{ properties['console_port'] }}
     region: {{ properties['region'] }}
     target: $(ref.{{ properties['prefix'] }}-master-network-lb-pool.selfLink)
