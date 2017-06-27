@@ -20,19 +20,19 @@ resources:
         value: |
           #cloud-config
           write_files:
-          - path: "/etc/sysconfig/iptables"
-              permissions: "0644"
-              owner: "root:root"
-              content: |
-              *nat
-              -A POSTROUTING -o eth0 -s 10.128.0.0/20 -j MASQUERADE
-
-              COMMIT
-
+          - path: "/etc/firewalld/direct.xml"
+            permissions: "0644"
+            owner: "root:root"
+            content: |
+              <?xml version="1.0" encoding="utf-8"?>
+              <direct>
+                <rule priority="0" table="nat" ipv="ipv4" chain="POSTROUTING">-o eth0 -s 10.12
+              8.0.0/16 -j MASQUERADE</rule>
+              </direct>
           - path: "/etc/sysctl.d/98-enable-nat-gateway.conf"
-              permissions: "0644"
-              owner: "root:root"
-              content: |
+            permissions: "0644"
+            owner: "root:root"
+            content: |
               #Configure IP Forwarding
               net.ipv4.ip_forward=1
     canIpForward: true
@@ -62,15 +62,15 @@ resources:
       - {{ properties['prefix'] }}-nat-gateway
     zone: {{ properties['zone'] }}
   type: compute.v1.instance
-- name: {{ properties['prefix'] }}-master-nat-route
+- name: {{ properties['prefix'] }}-nat-route
+  properties:
+      network: projects/{{env['project']}}/global/networks/{{ properties['prefix'] }}-network
+      nextHopInstance: $(ref.{{ properties['prefix'] }}-bastion.selfLink)
+      priority: 65535
+      destRange: '0.0.0.0/0'
+      tags:
+        - {{ properties['prefix'] }}-nat-client
   type: compute.v1.route
-  tags:
-    items:
-    - {{ properties['prefix'] }}-nat-client
-  network: projects/{{env['project']}}/global/networks/{{ properties['prefix'] }}-network
-  destRange: 10.128.0.0/20
-  nextHopInstance: $(ref.{{ properties['prefix'] }}-bastion.selfLink)
-}
 - name: {{ properties['prefix'] }}-master-template
   properties:
     description: ''
@@ -116,6 +116,7 @@ resources:
               permissions: '0644'
 {% endif %}
       networkInterfaces:
+      - accessConfigs: []
         network: projects/{{env['project']}}/global/networks/{{ properties['prefix'] }}-network
       scheduling:
         automaticRestart: true
@@ -197,6 +198,7 @@ resources:
             mounts:
               - [ '/dev/disk/by-id/google-openshift', '/var/lib/origin/openshift.local.volumes', 'xfs', 'gquota', '0', '0' ]
       networkInterfaces:
+      - accessConfigs: []
         network: projects/{{env['project']}}/global/networks/{{ properties['prefix'] }}-network
       scheduling:
         automaticRestart: true
@@ -278,6 +280,7 @@ resources:
             mounts:
               - [ '/dev/disk/by-id/google-openshift', '/var/lib/origin/openshift.local.volumes', 'xfs', 'gquota', '0', '0' ]
       networkInterfaces:
+      - accessConfigs: []
         network: projects/{{env['project']}}/global/networks/{{ properties['prefix'] }}-network
       scheduling:
         automaticRestart: true
