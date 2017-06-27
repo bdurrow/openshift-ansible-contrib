@@ -248,21 +248,25 @@ resources:
     portRange: {{ properties['console_port'] }}-{{ properties['console_port'] }}
     target: $(ref.{{ properties['prefix'] }}-master-ssl-lb-target.selfLink)
   type: compute.v1.globalForwardingRule
-- name: {{ properties['prefix'] }}-master-network-lb-pool
+- name: {{ properties['prefix'] }}-master-network-lb-backend
   properties:
-    description: ''
     healthChecks:
     - $(ref.{{ properties['prefix'] }}-master-network-lb-health-check.selfLink)
-    region: {{ properties['region'] }}
-  type: compute.v1.targetPool
+    loadBalancingScheme: INTERNAL
+    portName: {{ properties['prefix'] }}-web-console
+    protocol: TCP
+    backends:
+    - group: $(ref.{{ properties['prefix'] }}-master.instanceGroup)
+  type: compute.v1.backendService  
 - name: {{ properties['prefix'] }}-master-network-lb-rule
   properties:
     IPProtocol: TCP
     description: ''
     loadBalancingScheme: INTERNAL
+    network: projects/{{env['project']}}/global/networks/{{ properties['prefix'] }}-network
     portRange: {{ properties['console_port'] }}-{{ properties['console_port'] }}
     region: {{ properties['region'] }}
-    target: $(ref.{{ properties['prefix'] }}-master-network-lb-pool.selfLink)
+    backendService: $(ref.{{ properties['prefix'] }}-master-network-lb-backend.selfLink)
   type: compute.v1.forwardingRule
 - name: {{ properties['prefix'] }}-router-network-lb-pool
   properties:
