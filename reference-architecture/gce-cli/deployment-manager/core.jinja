@@ -19,16 +19,9 @@ resources:
       - key: user-data
         value: |
           #cloud-config
+          bootcmd:
+          - [ /usr/bin/firewall-offline-cmd, --add-masquerade ]
           write_files:
-          - path: "/etc/firewalld/direct.xml"
-            permissions: "0644"
-            owner: "root:root"
-            content: |
-              <?xml version="1.0" encoding="utf-8"?>
-              <direct>
-                <rule priority="0" table="nat" ipv="ipv4" chain="POSTROUTING">-o eth0 -s 10.12
-              8.0.0/16 -j MASQUERADE</rule>
-              </direct>
           - path: "/etc/sysctl.d/98-enable-nat-gateway.conf"
             permissions: "0644"
             owner: "root:root"
@@ -66,11 +59,22 @@ resources:
   properties:
       network: projects/{{env['project']}}/global/networks/{{ properties['prefix'] }}-network
       nextHopInstance: $(ref.{{ properties['prefix'] }}-bastion.selfLink)
-      priority: 65535
+      priority: 1000
       destRange: '0.0.0.0/0'
       tags:
         - {{ properties['prefix'] }}-nat-client
   type: compute.v1.route
+- name: {{ properties['prefix'] }}-nat-egress
+  properties:
+    allowed:
+    - IPProtocol: all
+    description: ''
+    network: projects/{{env['project']}}/global/networks/{{ properties['prefix'] }}-network
+    sourceTags:
+    - {{ properties['prefix'] }}-nat-client
+    targetTags:
+    - {{ properties['prefix'] }}-nat-gateway
+  type: compute.v1.firewall
 - name: {{ properties['prefix'] }}-master-template
   properties:
     description: ''
