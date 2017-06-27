@@ -198,15 +198,17 @@ resources:
   type: compute.v1.healthCheck
 - name: {{ properties['prefix'] }}-master-network-lb-health-check
   properties:
-    checkIntervalSec: 5
     description: ''
-    healthyThreshold: 2
-    host: ''
-    port: 8080
-    requestPath: /healthz
+    checkIntervalSec: 5
     timeoutSec: 5
     unhealthyThreshold: 2
-  type: compute.v1.httpHealthCheck
+    healthyThreshold: 2
+    type: TCP
+    tcpHealthCheck:
+      port: 8080
+      request: /healthz
+      proxyHeader: NONE
+  type: compute.v1.healthCheck
 - name: {{ properties['prefix'] }}-router-network-lb-health-check
   properties:
     checkIntervalSec: 5
@@ -251,11 +253,13 @@ resources:
     healthChecks:
     - $(ref.{{ properties['prefix'] }}-master-network-lb-health-check.selfLink)
     loadBalancingScheme: INTERNAL
-    portName: {{ properties['prefix'] }}-web-console
     protocol: TCP
+    region: {{ properties['region'] }}
+    sessionAffinity: NONE
     backends:
-    - group: $(ref.{{ properties['prefix'] }}-master.instanceGroup)
-  type: compute.v1.backendService  
+    - balancingMode: CONNECTION
+      group: $(ref.{{ properties['prefix'] }}-master.instanceGroup)
+  type: compute.v1.regionBackendService  
 - name: {{ properties['prefix'] }}-master-network-lb-rule
   properties:
     IPProtocol: TCP
