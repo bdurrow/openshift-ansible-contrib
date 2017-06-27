@@ -164,8 +164,6 @@ resources:
     namedPorts:
     - name: {{ properties['prefix'] }}-web-console
       port: {{ properties['console_port'] }}
-    targetPools:
-    - $(ref.{{ properties['prefix'] }}-master-network-lb-pool.selfLink)
     targetSize: {{ properties['master_instance_group_size'] }}
     region: {{ properties['region'] }}
   type: compute.v1.regionInstanceGroupManager
