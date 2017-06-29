@@ -152,7 +152,7 @@ resources:
             cluster_id: {{ stack_name }}
       description:
         str_replace:
-          template: Basic ssh/dns security group for cluster_id OpenShift cluster
+          template: Basic ssh/icmp security group for cluster_id OpenShift cluster
           params:
             cluster_id: {{ stack_name }}
       rules:
@@ -162,13 +162,8 @@ resources:
           port_range_max: 22
           remote_ip_prefix: {{ ssh_ingress_cidr }}
         - direction: ingress
-          protocol: tcp
-          port_range_min: 53
-          port_range_max: 53
-        - direction: ingress
-          protocol: udp
-          port_range_min: 53
-          port_range_max: 53
+          protocol: icmp
+          remote_ip_prefix: {{ ssh_ingress_cidr }}
 
 {% if openstack_flat_secgrp|bool %}
   flat-secgrp:
@@ -423,11 +418,6 @@ resources:
             cluster_id: {{ stack_name }}
       rules:
         - direction: ingress
-          protocol: tcp
-          port_range_min: 22
-          port_range_max: 22
-          remote_ip_prefix: {{ ssh_ingress_cidr }}
-        - direction: ingress
           protocol: udp
           port_range_min: 53
           port_range_max: 53
@@ -676,6 +666,12 @@ resources:
           net:         { get_resource: net }
           subnet:      { get_resource: subnet }
           secgrp:
+# TODO(bogdando) filter only required node rules into infra-secgrp
+{% if openstack_flat_secgrp|bool %}
+            - { get_resource: flat-secgrp }
+{% else %}
+            - { get_resource: node-secgrp }
+{% endif %}
             - { get_resource: infra-secgrp }
             - { get_resource: common-secgrp }
           floating_network: {{ external_network }}
@@ -717,6 +713,7 @@ resources:
           subnet:      { get_resource: subnet }
           secgrp:
             - { get_resource: dns-secgrp }
+            - { get_resource: common-secgrp }
           floating_network: {{ external_network }}
           net_name:
             str_replace:
