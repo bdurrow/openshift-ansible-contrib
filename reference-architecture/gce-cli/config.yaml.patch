@@ -1,0 +1,165 @@
+--- config.yaml.example	2017-06-27 20:59:50.475324378 +0000
++++ config.yaml	2017-06-30 21:11:29.425976463 +0000
+@@ -3,9 +3,12 @@
+ ### Main Configuration Section for OCP on GCP reference architecture ###
+ ###
+ 
++#Version to install
++openshift_image_tag: 'v1.5.1'
++
+ # Prefix for every resource name deployed. You can deploy multiple clusters
+ # under single account with different prefixes and DNS configuration
+-prefix: 'ocp'
++prefix: 'gca-dev-00'
+ 
+ # Username and password for Red Hat Customer Portal
+ rhsm_user: 'user@example.com'
+@@ -21,63 +24,59 @@
+ delete_gold_image: false
+ 
+ # Project ID and main zone settings for Google Cloud
+-gcloud_project: 'project-1'
+-gcloud_zone: 'us-central1-a'
+-
+-# Custom Subnet
+-# If not set will use default subnets in custom VPC
+-gce_vpc_custom_subnet_cidr: 10.160.0.0/20
++gcloud_project: 'gca-dev-00'
++gcloud_zone: 'us-central1-f'
+ 
+ # Public DNS domain which will be configured in Google Cloud DNS
+-public_hosted_zone: 'ocp.example.com'
++public_hosted_zone: 'gca-dev.mumms.com'
+ # Public DNS name for the Master service
+ openshift_master_cluster_public_hostname: 'master.{{ public_hosted_zone }}'
+ # Internal DNS name for the Master service
+ openshift_master_cluster_hostname: 'internal-master.{{ public_hosted_zone }}'
+ # Domain name for the OpenShift applications
+-wildcard_zone: 'apps.{{ public_hosted_zone }}'
++wildcard_zone: '{{ public_hosted_zone }}'
+ 
+ # Paths on the local file system for the certificate files. If empty, self-signed
+ # certificate will be generated
+-master_https_key_file: ''
+-master_https_cert_file: ''
++master_https_key_file: '/home/brad/certificates/aviary_mumms_com.key'
++master_https_cert_file: '/home/brad/certificates/aviary_mumms_com-chain.crt'
+ 
+ # How many instances should be created for each group
+ master_instance_group_size: 3
+ infra_node_instance_group_size: 3
+-node_instance_group_size: 2
++node_instance_group_size: 3
+ 
+ # Machine types
+-bastion_machine_type: g1-small
+-master_machine_type: n1-standard-2
++bastion_machine_type: n1-standard-1
++master_machine_type: n1-standard-1
+ infra_machine_type: n1-standard-2
+-node_machine_type: n1-standard-2
++node_machine_type: n1-standard-16
+ 
+ # OpenShift deployment type
+-openshift_deployment_type: openshift-enterprise
+-containerized: false
++openshift_deployment_type: origin
++containerized: true
+ 
+ # OpenShift SDN selection
+ # options are 'redhat/openshift-ovs-subnet', 'redhat/openshift-ovs-multitenant'
+ os_sdn_network_plugin_name: 'redhat/openshift-ovs-subnet'
+-cluster_network_cidr: '172.16.0.0/16'
+ 
+ # Deploy OpenShift Metrics
+-openshift_hosted_metrics_deploy: false
+-openshift_hosted_metrics_storage_volume_size: 20Gi
++openshift_hosted_metrics_deploy: true
++openshift_hosted_metrics_deployer_version: '{{ openshift_image_tag }}'
++openshift_hosted_metrics_storage_volume_size: '20Gi'
+ 
+ # OpenShift Identity providers. This is Google oauth example (hosted_domain is
+ # optional and restricts login to users only from the specified domain)
+ openshift_master_identity_providers:
+-- name: 'google'
+-  kind: 'GoogleIdentityProvider'
+-  login: true
++- name: 'github'
++  kind: 'GitHubIdentityProvider'
+   challenge: false
+-  mapping_method: 'claim'
+-  clientID: 'xxx-yyy.apps.googleusercontent.com'
+-  clientSecret: 'zzz'
+-  hostedDomain: 'example.com'
+-
++  login: true
++  mappingMethod: 'claim'
++  clientID: '8f24df4c9f6507571fb1'
++  clientSecret: 'fa60b052bd58f8696c697cda16544365d2e4cbc5'
++  teams:
++  - 'mummssoftware/gca-dev-users'
+ 
+ ###
+ ### Default values ###
+@@ -85,13 +84,52 @@
+ 
+ 
+ # Disk sizes in GB
+-bastion_disk_size: 20
+-master_boot_disk_size: 35
+-#Only used when containerized: true
+-master_docker_disk_size: 25
+-infra_boot_disk_size: 25
++bastion_disk_size: 10
++master_boot_disk_size: 10
++#master_docker_disk_size only used when containerized: true
++master_docker_disk_size: 10
++infra_boot_disk_size: 10
+ infra_docker_disk_size: 25
+-infra_openshift_disk_size: 50
+-node_boot_disk_size: 25
+-node_docker_disk_size: 25
+-node_openshift_disk_size: 50
++infra_openshift_disk_size: 10
++node_boot_disk_size: 10
++#These (node_{docker,openshift}_disk_size) are not used
++#because of local-ssd config
++node_docker_disk_size: 125
++node_openshift_disk_size: 250
++
++##Mumms
++openshift_hosted_router_certificate:
++  certfile: '/home/brad/certificates/aviary_mumms_com.crt'
++  keyfile: '/home/brad/certificates/aviary_mumms_com.key'
++  cafile: '/home/brad/certificates/aviary_mumms_com-ca-chain.crt'
++
++
++openshift_hosted_logging_deploy: true
++openshift_hosted_logging_deployer_version: '{{ openshift_image_tag }}'
++openshift_hosted_logging_storage_kind: 'dynamic'
++openshift_hosted_logging_storage_volume_size: '20Gi'
++openshift_logging_es_cluster_size: 3
++
++#Not implemented until Openshift Ansible 3.6
++#https://github.com/openshift/openshift-ansible/pull/4262
++#openshift_storageclass_name: standard
++#openshift_storageclass_provisioner: kubernetes.io/gce-pd
++#openshift_storageclass_type: pd-standard
++
++openshift_hosted_registry_cert_expire_days: 3650
++openshift_ca_cert_expire_days: 3650
++openshift_node_cert_expire_days: 3650
++openshift_master_cert_expire_days: 3650
++etcd_ca_default_days: 3650
++
++#dev
++gce_vpc_custom_subnet_cidr: '10.160.0.0/20'
++cluster_network_cidr: '172.160.0.0/14'
++osm_host_subnet_length: 9
++openshift_master_portal_net: '172.164.0.0/14'
++
++#prod
++#gce_vpc_custom_subnet_cidr: '10.176.0.0/20'
++#cluster_network_cidr: '172.176.0.0/14'
++#osm_host_subnet_length: 9
++#openshift_master_portal_net: '172.180.0.0/14'
