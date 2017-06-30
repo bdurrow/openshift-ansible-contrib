@@ -44,7 +44,7 @@
     include_role:
       name: update-instances
 
-  - name: install required packages
+  - name: install openshift-enterprise required packages
     package:
       name: '{{ item }}'
       state: present
@@ -54,10 +54,13 @@
     - google-compute-engine-init
     when: openshift_deployment_type == 'openshift-enterprise'
 
-  - name: install cloud-init
+  - name: install common required packages
     package:
-      name: cloud-init
+      name: '{{ item }}'
       state: present
+    with_items:
+    - cloud-init
+    - lvm2
 
   - name: add disk_setup to cloud_init_modules
     lineinfile: dest=/etc/cloud/cloud.cfg insertafter="^cloud_config_modules:$" line=' - disk_setup' state=present
