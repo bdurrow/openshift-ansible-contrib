@@ -1,10 +1,5 @@
 #!/bin/bash
 
-domain=$(grep search /etc/resolv.conf | awk '{print $2}')
-
-systemctl enable dnsmasq.service
-systemctl start dnsmasq.service
-
 #yum -y update
 yum -y install wget git net-tools bind-utils iptables-services bridge-utils bash-completion
 
@@ -25,5 +20,11 @@ VG=docker-vg
 DATA_SIZE=95%VG
 EXTRA_DOCKER_STORAGE_OPTIONS="--storage-opt dm.basesize=3G"
 EOF
+
+sed -i -e 's/ResourceDisk.EnableSwap.*/ResourceDisk.EnableSwap=n/g' /etc/waagent.conf
+sed -i -e 's/ResourceDisk.SwapSizeMB.*/ResourceDisk.SwapSizeMB=0/g' /etc/waagent.conf
+swapoff -a
+# Do not restart waagent as it will make the installation fail
+#systemctl restart waagent.service
 
 touch /root/.updateok

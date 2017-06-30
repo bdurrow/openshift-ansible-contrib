@@ -13,12 +13,7 @@ SSHPUBLICDATA=${10}
 SSHPUBLICDATA2=${11}
 SSHPUBLICDATA3=${12}
 
-domain=$(grep search /etc/resolv.conf | awk '{print $2}')
-
 ps -ef | grep master.sh > cmdline.out
-
-systemctl enable dnsmasq.service
-systemctl start dnsmasq.service
 
 mkdir -p /home/$USERNAME/.ssh
 echo $SSHPUBLICDATA $SSHPUBLICDATA2 $SSHPUBLICDATA3 >  /home/$USERNAME/.ssh/id_rsa.pub
@@ -59,7 +54,7 @@ cat <<EOF > /home/${USERNAME}/.ansible.cfg
 host_key_checking = False
 EOF
 chown ${USERNAME} /home/${USERNAME}/.ansible.cfg
-  
+
 cat <<EOF > /root/.ansible.cfg
 [defaults]
 host_key_checking = False

@@ -24,6 +24,7 @@ export TENANTID=${array[18]}
 export AADCLIENTID=${array[19]}
 export AADCLIENTSECRET=${array[20]}
 export RHSMMODE=${array[21]}
+export METRICS=${array[22]}
 export FULLDOMAIN=${THEHOSTNAME#*.*}
 export WILDCARDFQDN=${WILDCARDZONE}.${FULLDOMAIN}
 export WILDCARDIP=`dig +short ${WILDCARDFQDN}`
@@ -238,6 +239,7 @@ rhn_pool_id=${RHNPOOLID}
 openshift_install_examples=true
 deployment_type=openshift-enterprise
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/origin/master/htpasswd'}]
+openshift_master_manage_htpasswd=false
 
 # default selectors for router and registry services
 openshift_router_selector='role=infra'
@@ -253,13 +255,18 @@ openshift_master_default_subdomain=${WILDCARDNIP}
 #openshift_master_default_subdomain=${WILDCARDZONE}.${FULLDOMAIN}
 # osm_default_subdomain=${WILDCARDZONE}.${FULLDOMAIN}
 osm_default_subdomain=${WILDCARDNIP}
-openshift_use_dnsmasq=false
+openshift_use_dnsmasq=true
 openshift_public_hostname=${RESOURCEGROUP}.${FULLDOMAIN}
 
 openshift_master_cluster_method=native
 openshift_master_cluster_hostname=${RESOURCEGROUP}.${FULLDOMAIN}
 openshift_master_cluster_public_hostname=${RESOURCEGROUP}.${FULLDOMAIN}
 
+openshift_hosted_metrics_deploy=${METRICS}
+openshift_metrics_cassandra_storage_type=dynamic
+openshift_metrics_hawkular_nodeselector={"role":"infra"}
+openshift_metrics_cassandra_nodeselector={"role":"infra"}
+openshift_metrics_heapster_nodeselector={"role":"infra"}
 
 [masters]
 master1 openshift_hostname=master1 openshift_node_labels="{'role': 'master'}"
@@ -470,4 +477,3 @@ chmod 755 /home/${AUSERNAME}/openshift-install.sh
 echo "${RESOURCEGROUP} Bastion Host is starting OpenShift Install" | mail -s "${RESOURCEGROUP} Bastion OpenShift Install Starting" ${RHNUSERNAME} || true
 /home/${AUSERNAME}/openshift-install.sh &> /home/${AUSERNAME}/openshift-install.out &
 exit 0
-
