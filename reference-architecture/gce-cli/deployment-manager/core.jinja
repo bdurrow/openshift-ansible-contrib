@@ -251,35 +251,45 @@ resources:
         type: PERSISTENT
       - autoDelete: true
         boot: false
-        deviceName: docker
+        deviceName: data
+        index: 1
+        interface: SCSI
+        mode: READ_WRITE
+        type: SCRATCH
+        initializeParams:
+          diskType: local-ssd
+      - autoDelete: false
+        boot: false
+        deviceName: gluster
         index: 1
         interface: SCSI
         mode: READ_WRITE
         type: PERSISTENT
         initializeParams:
           sourceImage: global/images/empty-1g
-          diskSizeGb: {{ properties['node_docker_disk_size'] }}
+          diskSizeGb: 10
           diskType: pd-ssd
-      - autoDelete: true
-        boot: false
-        deviceName: openshift
-        index: 2
-        interface: SCSI
-        mode: READ_WRITE
-        type: PERSISTENT
-        initializeParams:
-          sourceImage: global/images/empty-1g
-          diskSizeGb: {{ properties['node_openshift_disk_size'] }}
-          diskType: pd-ssd        
       machineType: {{ properties['node_machine_type'] }}
       metadata:
         items:
         - key: user-data
           value: |
             #cloud-config
+            bootcmd:
+            - [ /usr/sbin/sgdisk, --zap-all, /dev/disk/by-id/google-data ]
+            - 
+              - /usr/sbin/sgdisk
+              - --mbrtogpt
+              - --new=1:256:32767999
+              - --new=2:32768000:98303743
+              - -t 1:8e00
+              - -t 2:8300
+              - /dev/disk/by-id/google-data
+            - [ /usr/sbin/pvcreate, /dev/disk/by-id/google-data-part1 ]
+            - [ /usr/sbin/vgcreate, docker-vol, /dev/disk/by-id/google-data-part1 ]
             write_files:
             - content: |
-                DEVS="/dev/disk/by-id/google-docker"
+                #DEVS="/dev/disk/by-id/google-data-part1"
                 VG="docker-vol"
                 DATA_SIZE="95%VG"
                 EXTRA_DOCKER_STORAGE_OPTIONS="--storage-opt dm.basesize=3G"
@@ -289,11 +299,11 @@ resources:
             fs_setup:
                - label: osl
                  filesystem: xfs
-                 device: /dev/disk/by-id/google-openshift
+                 device: /dev/disk/by-id/google-data-part2
                  partition: none
 
             mounts:
-              - [ '/dev/disk/by-id/google-openshift', '/var/lib/origin/openshift.local.volumes', 'xfs', 'gquota', '0', '0' ]
+              - [ '/dev/disk/by-id/google-data-part2', '/var/lib/origin/openshift.local.volumes', 'xfs', 'gquota', '0', '0' ]
       networkInterfaces:
       - accessConfigs: []
         network: projects/{{env['project']}}/global/networks/{{ properties['prefix'] }}-network
