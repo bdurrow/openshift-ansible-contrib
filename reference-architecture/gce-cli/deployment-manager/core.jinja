@@ -120,7 +120,7 @@ resources:
                 DEVS="/dev/disk/by-id/google-docker"
                 VG="docker-vol"
                 DATA_SIZE="95%VG"
-                EXTRA_DOCKER_STORAGE_OPTIONS="--storage-opt dm.basesize=5G"
+                EXTRA_DOCKER_STORAGE_OPTIONS="--storage-opt dm.basesize=10G"
               path: /etc/sysconfig/docker-storage-setup
               permissions: '0644'
 {% endif %}
