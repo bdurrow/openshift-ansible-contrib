@@ -105,9 +105,11 @@ resources:
     sourceTags:
     - {{ properties['prefix'] }}-node
     - {{ properties['prefix'] }}-infra-node
+    - {{ properties['prefix'] }}-master
     targetTags:
     - {{ properties['prefix'] }}-node
     - {{ properties['prefix'] }}-infra-node
+    - {{ properties['prefix'] }}-master
   type: compute.v1.firewall
 - name: {{ properties['prefix'] }}-node-internal-kubelet
   properties:
@@ -134,6 +136,7 @@ resources:
     sourceTags:
     - {{ properties['prefix'] }}-node
     - {{ properties['prefix'] }}-infra-node
+    - {{ properties['prefix'] }}-master
     targetTags:
     - {{ properties['prefix'] }}-infra-node
   type: compute.v1.firewall
