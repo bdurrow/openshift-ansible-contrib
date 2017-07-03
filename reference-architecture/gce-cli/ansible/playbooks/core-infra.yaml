@@ -34,12 +34,15 @@
 #      timeout: 900
 - name: wait for instances to become available for ssh
   hosts: 'tag_{{ prefix}}-bastion:tag_{{ prefix }}'
+  serial: 1
   gather_facts: no
   tasks:
   - name: ping hosts
     action: ping
     register: ping_result
-    until: ping_result.ping == 'pong'
+    until: ping_result|succeeded
     retries: 120
     delay: 1
     ignore_errors: yes
+  - name: reset unreachable hosts
+    meta: clear_host_errors
