@@ -1,0 +1,10 @@
+#- name: create instance groups
+#  hosts: localhost
+#  roles:
+#  - ../openshift-ansible-contrib/reference-architecture/gce-cli/ansible/playbooks/roles/instance-groups
+#
+- hosts: storage
+  gather_facts: yes
+  become: yes
+  roles:
+  - ../../roles/gluster-ports
