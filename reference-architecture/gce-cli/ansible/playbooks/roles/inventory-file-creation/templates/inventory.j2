@@ -60,3 +60,8 @@ openshift_master_identity_providers={{ openshift_master_identity_providers | to_
 {% for i in groups['tag_' + prefix + '-node'] %}
 {{ hostvars[i].gce_name }} openshift_node_labels="{'role': 'app'}"
 {% endfor %}
+
+[storage]
+{% for i in groups['tag_' + prefix + '-node'] %}
+{{ hostvars[i].gce_name }}
+{% endfor %}
