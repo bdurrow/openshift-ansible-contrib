@@ -125,6 +125,21 @@ resources:
     - {{ properties['prefix'] }}-node
     - {{ properties['prefix'] }}-infra-node
   type: compute.v1.firewall
+- name: {{ properties['prefix'] }}-infra-hawkular-to-kubelet
+  properties:
+    allowed:
+    - IPProtocol: tcp
+      ports:
+      - '10250'
+    description: ''
+    network: $(ref.{{ properties['prefix'] }}-network.selfLink)
+    sourceTags:
+    - {{ properties['prefix'] }}-infra-node
+    targetTags:
+    - {{ properties['prefix'] }}-node
+    - {{ properties['prefix'] }}-infra-node
+    - {{ properties['prefix'] }}-master
+  type: compute.v1.firewall
 - name: {{ properties['prefix'] }}-gluster
   properties:
     allowed:
